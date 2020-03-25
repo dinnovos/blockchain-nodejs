@@ -1,0 +1,8 @@
+/node_modules
+/vendor
+/.idea
+/.vscode
+/.vagrant
+yarn-error.log
+*.sublime-project
+*.sublime-workspace
