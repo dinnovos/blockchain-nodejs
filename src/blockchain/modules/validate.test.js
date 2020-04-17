@@ -20,7 +20,7 @@ describe('validate()', () => {
 
     expect(() => {
       validate(blockchain.blocks);
-    }).toThrowError('Invalid Genesis block.');
+    }).toThrowError('Invalid genesis block.');
   });
 
   it('invalidates a chain with a corrupt previousHash within a block', () => {

@@ -4,7 +4,7 @@ export default (blockchain) => {
   const [genesisBlock, ...blocks] = blockchain;
 
   // Verifica que el block genesis de la cadena de bloques enviada sea igual al genesis
-  if (JSON.stringify(genesisBlock) !== JSON.stringify(Block.genesis)) throw Error('Invalid Genesis block.');
+  if (JSON.stringify(genesisBlock) !== JSON.stringify(Block.genesis)) throw Error('Invalid genesis block.');
 
   // Recorre el resto de los bloques
   for (let i = 0; i < blocks.length; i++) {
