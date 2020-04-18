@@ -5,7 +5,6 @@ const { name, version } = PKG;
 
 console.log(`${name} v${version}`);
 const { genesis } = Block;
-console.log(genesis.toString());
 
 const block = Block.mine(genesis, 'd4t4-1');
 console.log(block.toString());
