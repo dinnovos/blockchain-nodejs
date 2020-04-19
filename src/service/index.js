@@ -21,6 +21,9 @@ app.post("/mine", (req, res) => {
 	const {body: { data }} = req;
 	const block = blockchain.addBlock(data);
 
+	// Cuando la instancia mine un nuevo bloque, enviara un broadcast a toda la red para intentar reemplazar la blockchain de cada nodo
+	p2pService.sync();
+
 	res.json({
 		blocks: blockchain.blocks.length,
 		block
@@ -28,6 +31,6 @@ app.post("/mine", (req, res) => {
 });
 
 app.listen(HTTP_PORT, () => {
-  console.log(`Service HTTP:${HTTP_PORT} listening...`);
-  p2pService.listen();
+  	console.log(`Service HTTP:${HTTP_PORT} listening...`);
+  	p2pService.listen();
 })

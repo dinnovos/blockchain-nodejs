@@ -18,6 +18,7 @@ class P2PService{
 		// Cuando se reciba una conexion de un cliente
 		server.on('connection', (socket) => this.onConnection(socket));
 
+		// Por cad peer intento establecer una conexion
 		peers.forEach((peer) => {
 			const socket = new webSocket(peer);
 
@@ -29,20 +30,35 @@ class P2PService{
 	}
 
 	onConnection(socket){
-		const {blockchain: { blocks } } = this;
+		const { blockchain } = this;
 
 		console.log('[ws:socket connect]');
 
-		// Se almacena el nuevo socket en un array
+		// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
 		this.sockets.push(socket);
 
+		// Cuando recibo el mensaje, obtengo una lista de bloque del nodo al que me he contacto
+		// Luego intento reemplazar esa lista de bloque por la lista de la instancia actual
 		socket.on("message", (message) => {
 			const { type, value } = JSON.parse(message);
 
-			console.log({type, value});
+			try{
+				if(type === MESSAGE.BLOCKS)
+					blockchain.replace(value);
+			}catch(error){
+				console.log(`[ws:message] error ${error}`);
+			}
 		});
 
-		socket.send(JSON.stringify({type: MESSAGE.BLOCKS, value:blocks}));
+		// Cuando se establece una conexion se envia a ese nodo los bloques que tiene la instancia actual
+		socket.send(JSON.stringify({ type: MESSAGE.BLOCKS, value:blockchain.blocks }));
+	}
+
+	sync(){
+		const {blockchain: { blocks } } = this;
+
+		// Envio un mensaje a todos los nodos de la red con los bloques de la instancia actual
+		this.broadcast(MESSAGE.BLOCKS, blocks);
 	}
 
 	broadcast(type, value){
