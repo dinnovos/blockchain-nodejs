@@ -9,16 +9,16 @@ describe("MemoryPool", () => {
 	beforeEach(() => {
 		memoryPool = new MemoryPool();
 		wallet = new Wallet();
-		transaction = Transaction.create(wallet, 'r4ndon-4ddr33ss');
+		transaction = Transaction.create(wallet, 'r4ndon-4ddr33ss', 5);
 		memoryPool.addOrUpdate(transaction);
 	});
 
 	it("Has one transaction", () => {
-		expect(memoryPool.transaction.length).toEqual(1);
+		expect(memoryPool.transactions.length).toEqual(1);
 	});
 
 	it("Adds a transaction to the memoryPool", () => {
-		const found = memoryPool.transaction.find(({ id }) => id === transaction.id);
+		const found = memoryPool.transactions.find(({ id }) => id === transaction.id);
 		expect(found).toEqual(transaction); 
 	});
 
@@ -28,10 +28,15 @@ describe("MemoryPool", () => {
 
 		memoryPool.addOrUpdate(txNew);
 
-		expect(memoryPool.transaction.length).toEqual(1);
+		expect(memoryPool.transactions.length).toEqual(1);
 
-		const found = memoryPool.transaction.find(({ id }) => id === transaction.id);
+		const found = memoryPool.transactions.find(({ id }) => id === transaction.id);
 		expect(JSON.stringify(found)).not.toEqual(txOld);
 		expect(txNew).toEqual(found);
 	});
+
+	it("Wipes transactions", () => {
+		memoryPool.wipe();
+		expect(memoryPool.transactions.length).toEqual(0);
+	})
 });

@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { elliptic } from '../modules';
 
+const REWARD = 1;
+
 class Transaction{
 	constructor(){
 		this.id = uuidv4();
@@ -29,6 +31,12 @@ class Transaction{
 		transaction.input = Transaction.sign(transaction, senderWallet);
 
 		return transaction;
+	}
+
+	static reward(minerWallet, blockchainWallet){
+
+		// Crea una transaccion al minero como recompensa por el trabajo de mineria
+		return this.create(blockchainWallet, minerWallet.publicKey, REWARD);
 	}
 
 	// Metodo estatico para verificar una transaccion
@@ -79,4 +87,5 @@ class Transaction{
 	}
 }
 
+export { REWARD };
 export default Transaction;
