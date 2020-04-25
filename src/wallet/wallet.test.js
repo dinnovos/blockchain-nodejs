@@ -14,7 +14,7 @@ describe('Wallet', () => {
 		expect(wallet.balance).toEqual(INITIAL_BALANCE);
 		expect(typeof wallet.keyPair).toEqual('object');
 		expect(typeof wallet.publicKey).toEqual('string');
-		expect(wallet.publicKey.length).toEqual(130);
+		expect(wallet.publicKey.length).toEqual(66);
 	});
 
 	it('use sign()', () => {
