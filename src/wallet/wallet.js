@@ -4,17 +4,24 @@ import Transaction from './transaction';
 // Balance inicial
 const INITIAL_BALANCE = 100;
 
+const TYPE = { 
+	MINER: 'miner',
+	USER: 'user'
+};
+
 class Wallet{
-	constructor(blockchain, initialBalance = INITIAL_BALANCE){
+	constructor(blockchain, initialBalance = INITIAL_BALANCE, type = TYPE.USER){
 		this.balance = initialBalance;
 
 		// Clave privada
 		this.keyPair = elliptic.createKeyPair();
 
 		// Clave publica
-		this.publicKey = this.keyPair.getPublic().encode("hex");
+		this.publicKey = this.keyPair.getPublic().encodeCompressed("hex");
 
 		this.blockchain = blockchain;
+
+		this.type = type;
 	}
 
 	toString(){
@@ -102,6 +109,6 @@ class Wallet{
 	}
 }
 
-export { INITIAL_BALANCE };
+export { INITIAL_BALANCE, TYPE };
 
 export default Wallet;
