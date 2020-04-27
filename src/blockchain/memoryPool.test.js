@@ -1,14 +1,18 @@
 import MemoryPool from './memoryPool';
+import Blockchain from './blockchain';
 import Wallet, { Transaction } from '../wallet';
 
+
 describe("MemoryPool", () => {
+	let blockchain;
 	let memoryPool;
 	let wallet;
 	let transaction;
 
 	beforeEach(() => {
+		blockchain = new Blockchain();
 		memoryPool = new MemoryPool();
-		wallet = new Wallet();
+		wallet = new Wallet(blockchain);
 		transaction = Transaction.create(wallet, 'r4ndon-4ddr33ss', 5);
 		memoryPool.addOrUpdate(transaction);
 	});

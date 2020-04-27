@@ -6,11 +6,14 @@ const INITIAL_BALANCE = 100;
 
 const TYPE = { 
 	MINER: 'miner',
-	USER: 'user'
+	USER: 'user',
+	BLOCKCHAIN: 'blockchain',
 };
 
 class Wallet{
 	constructor(blockchain, initialBalance = INITIAL_BALANCE, type = TYPE.USER){
+
+		// Solo se debe usar como balance inicial, no como balance actualizado
 		this.balance = initialBalance;
 
 		// Clave privada
