@@ -100,7 +100,6 @@
 				</div>
 				<div class="col-2 text-right">
 					<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-						<button type="button" class="btn btn-sm btn-secondary btn-miner">Confirmation</button>
 						<button type="button" class="btn btn-sm btn-primary btn-new-wallet">New Wallet</button>
 					</div>
 				</div>
@@ -168,7 +167,7 @@
 
 														<div class="form-group">
 															<label for="inputAmount">Amount </label>
-															<input type="text" name="amount" class="form-control" id="inputAmount" aria-describedby="amountHelp">
+															<input type="number" name="amount" class="form-control" id="inputAmount" aria-describedby="amountHelp">
 															<small id="amountHelp" class="form-text text-muted">Example: 10</small>
 														</div>
 
@@ -204,7 +203,17 @@
 			
 			<div class="row">
 				<div class="col-12">
-					<h4>Unconfirmed transactions</h4>
+
+					<div class="row">
+						<div class="col-8">
+							<h4>Unconfirmed transactions</h4>
+						</div>
+						<div class="col-4 text-right">
+							<% if(transactions.length > 0) {%>
+								<button type="button" class="btn btn-sm btn-primary btn-miner">Confirm Transactions</button>
+							<% } %>
+						</div>
+					</div>
 
 					<div id="content-transactions">
 
