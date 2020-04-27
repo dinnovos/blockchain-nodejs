@@ -1,4 +1,4 @@
-import { Transaction, blockchainWallet } from '../wallet';
+import { Transaction } from '../wallet';
 import { MESSAGE } from '../service/p2p';
 
 class Miner{
@@ -8,7 +8,7 @@ class Miner{
 		this.wallet = wallet;
 	}
 
-	mine(){
+	mine(blockchainWallet){
 		const { blockchain: { memoryPool }, p2pService, wallet } = this;
 
 		if(memoryPool.transactions.length === 0)

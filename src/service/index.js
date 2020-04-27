@@ -14,8 +14,11 @@ const { HTTP_PORT = 3000 } = process.env;
 const app = express();
 
 const blockchain = new Blockchain();
+
 const mainWallet = new Wallet(blockchain, 1000);
 const minerWallet = new Wallet(blockchain, 0, TYPE.MINER);
+const blockchainWallet = new Wallet(blockchain, 1000000, TYPE.BLOCKCHAIN);
+
 const p2pService = new P2PService(blockchain);
 const miner = new Miner(blockchain, p2pService, minerWallet);
 
@@ -23,6 +26,7 @@ let walletContainer = [];
 
 walletContainer.push(mainWallet);
 walletContainer.push(minerWallet);
+walletContainer.push(blockchainWallet);
 
 // Necesario para el montor de plantilla Ejs
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +37,7 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.get("/index", (req, res) => {
+app.get("/", (req, res) => {
 	const { memoryPool: { transactions }, blocks } = blockchain;
 	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
 
@@ -108,6 +112,7 @@ app.post("/transaction", (req, res) => {
 		const tx = senderWallet.createTransaction(recipientAddress, parseInt(amount));
 		p2pService.broadcast(MESSAGE.TX, tx);
 		res.json(tx);
+		
 	}catch(error){
 		res.json({ error: error.message });
 	}
@@ -115,11 +120,12 @@ app.post("/transaction", (req, res) => {
 
 app.get("/mine/transactions", (req, res) => {
 	try{
-		const block = miner.mine();
-		res.redirect('/blocks');
+		const block = miner.mine(blockchainWallet);
 	}catch(error){
 		res.json({ error: error.message });
 	}
+
+	res.json({ status: "ok" });
 });
 
 // Cada 20 segundos el minero busca transacciones en  momory pool y mina las transacciones
