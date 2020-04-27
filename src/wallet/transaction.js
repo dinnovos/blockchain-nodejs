@@ -12,10 +12,10 @@ class Transaction{
 
 	// Metodo estatico para generar una transaccion
 	static create(senderWallet, recipientAddress, amount){
-		const { balance, publicKey } = senderWallet;
+		const { currentBalance, publicKey } = senderWallet;
 
-		if(amount > balance)
-			throw(`Amount: ${amount} exceeds balance.`);
+		if(amount > currentBalance)
+			throw Error(`Amount: ${amount} exceed balance.`);
 
 		const transaction = new Transaction();
 
@@ -25,7 +25,7 @@ class Transaction{
 			{ amount, address: recipientAddress},
 
 			// Output de quien envia pero con el nuevo balance
-			{ amount: balance - amount, address: publicKey}
+			{ amount: currentBalance - amount, address: publicKey}
 		]);
 
 		transaction.input = Transaction.sign(transaction, senderWallet);
@@ -58,7 +58,7 @@ class Transaction{
 		// Signature: firma digital que hace unica la transaccion
 		return {
 			timestamp: 	Date.now(),
-			amount: 	senderWallet.balance,
+			amount: 	senderWallet.currentBalance,
 			address: 	senderWallet.publicKey,
 			signature: 	senderWallet.sign(transaction.outputs),
 		};

@@ -1,15 +1,20 @@
 import Transaction, { REWARD } from './transaction';
+import Blockchain from '../blockchain';
 import Wallet from './wallet';
-import { blockchainWallet } from './index'
+import { TYPE } from './index'
 
 describe('Transaction', () => {
+	let blockchain;
 	let wallet;
+	let blockchainWallet;
 	let transaction;
 	let amount;
 	let recipientAddress;
 
 	beforeEach(() => {
-		wallet = new Wallet();
+		blockchain = new Blockchain();
+		blockchainWallet = new Wallet(blockchain, 1000000, TYPE.BLOCKCHAIN);
+		wallet = new Wallet(blockchain);
 		recipientAddress = 'r3c1p13nt';
 		amount = 5;
 		transaction = Transaction.create(wallet, recipientAddress, amount);
@@ -34,7 +39,7 @@ describe('Transaction', () => {
 		it('does not create the transaction', () => {
 			expect(() => {
 				transaction = Transaction.create(wallet, recipientAddress, amount);
-			}).toThrowError(`Amount: ${amount} exceeds balance.`);
+			}).toThrowError(`Amount: ${amount} exceed balance.`);
 		});
   	});
 
@@ -81,7 +86,6 @@ describe('Transaction', () => {
 		});
   	});
 
-	/*
   	describe("Creating a reward transaction", () => {
   		beforeEach(() => {
   			transaction = Transaction.reward(wallet, blockchainWallet);
@@ -97,5 +101,4 @@ describe('Transaction', () => {
   			expect(output.amount).toEqual(blockchainWallet.balance - REWARD);
   		});
   	});
-  	*/
 });
