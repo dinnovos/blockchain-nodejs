@@ -128,6 +128,7 @@ app.get("/mine/transactions", (req, res) => {
 	res.json({ status: "ok" });
 });
 
+/*
 // Cada 20 segundos el minero busca transacciones en  momory pool y mina las transacciones
 setIntervalAsync(async () => {
 	try{
@@ -137,6 +138,7 @@ setIntervalAsync(async () => {
 		console.log("Error: ", error.message);
 	}
 }, 20000);
+*/
 
 app.listen(HTTP_PORT, () => {
   	console.log(`Service HTTP:${HTTP_PORT} listening...`);

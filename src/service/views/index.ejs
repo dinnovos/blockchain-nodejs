@@ -19,8 +19,27 @@
 
                     	setTimeout(function(){ 
                     		location.reload();
-                    	}, 2000);
+                    	}, 1000);
                     }
+                },
+                error: function(e){
+                    new Notyf({delay:3000}).error('Por favor, intente nuevamente');
+                }
+            });
+		});		
+
+		$(".btn-miner").on("click", function(){
+			$.ajax({
+                type: "GET",
+                url: '/mine/transactions',
+                dataType: 'json',
+                success: function (result){
+
+                	new Notyf({delay:3000}).success('Transactions have been confirmed successfully');
+
+                	setTimeout(function(){ 
+                		location.reload();
+                	}, 1000);
                 },
                 error: function(e){
                     new Notyf({delay:3000}).error('Por favor, intente nuevamente');
@@ -80,7 +99,10 @@
 					<h4>Wallets</h4>
 				</div>
 				<div class="col-2 text-right">
-					<button type="button" class="btn btn-sm btn-primary btn-new-wallet">New Wallet</button>
+					<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+						<button type="button" class="btn btn-sm btn-secondary btn-miner">Confirmation</button>
+						<button type="button" class="btn btn-sm btn-primary btn-new-wallet">New Wallet</button>
+					</div>
 				</div>
 			</div>
 			
@@ -97,6 +119,8 @@
 					</thead>
 					<tbody>
 						<% walletContainer.forEach(function(wallet, index){ %>
+
+							<% if (wallet.type !== typeWallet.BLOCKCHAIN) { %>
 							<tr>
 								<td>
 
@@ -162,6 +186,8 @@
 
 								</td>
 							</tr>
+							<% } %>
+
 						<% }); %>
 					</tbody>
 				</table>
