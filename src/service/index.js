@@ -128,17 +128,15 @@ app.get("/mine/transactions", (req, res) => {
 	res.json({ status: "ok" });
 });
 
-/*
 // Cada 20 segundos el minero busca transacciones en  momory pool y mina las transacciones
 setIntervalAsync(async () => {
 	try{
-		const block = miner.mine();
+		const block = miner.mine(blockchainWallet);
 		console.log("Mining...");
 	}catch(error){
 		console.log("Error: ", error.message);
 	}
-}, 20000);
-*/
+}, 60000);
 
 app.listen(HTTP_PORT, () => {
   	console.log(`Service HTTP:${HTTP_PORT} listening...`);
