@@ -1,12 +1,10 @@
 # Blockchain con Nodejs
 
-Proyecto simple tipo Blockchain desarrollado en Nodejs como base del proceso utilizado por Bitcoin (BTC). Utiliza Prof of Work como algorimo de consenso y posee una interfaz básica con Boostrap 4
+Proyecto simple tipo Blockchain desarrollado en Nodejs como base del proceso utilizado por Bitcoin (BTC). Utiliza Prof of Work como algoritmo de consenso y posee una interfaz básica con Bootstrap 4
 
 ## Comenzando 🚀
 
 _Estas instrucciones te permitirán obtener una copia del proyecto en funcionamiento en tu máquina local para propósitos de desarrollo y pruebas._
-
-Mira **Deployment** para conocer como desplegar el proyecto.
 
 
 ### Pre-requisitos 📋
@@ -18,7 +16,7 @@ Node v12.12.0
 
 ### Instalación 🔧
 
-_Clonar respositorio_
+_Clonar repositorio_
 
 ```
 git clone https://github.com/dinnovos/blockchain-nodejs.git
