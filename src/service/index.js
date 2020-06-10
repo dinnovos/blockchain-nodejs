@@ -1,15 +1,20 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
+import ejs from 'ejs';
 
 import Blockchain from '../blockchain';
 import P2PService, { MESSAGE } from './p2p';
 import Wallet, { TYPE } from '../wallet';
 import Miner from '../miner';
 
+const fs = require('fs');
+let envConfig = fs.readFileSync(process.cwd() + '/env.json');
+let config = JSON.parse(envConfig);
+
 const { setIntervalAsync } = require('set-interval-async/dynamic');
 
-const { HTTP_PORT = 3000 } = process.env;
+const { NAME, HTTP_PORT = 3000, P2P_PORT = 5000, PEERS } = config;
 
 const app = express();
 
@@ -19,7 +24,7 @@ const mainWallet = new Wallet(blockchain, 1000);
 const minerWallet = new Wallet(blockchain, 0, TYPE.MINER);
 const blockchainWallet = new Wallet(blockchain, 1000000, TYPE.BLOCKCHAIN);
 
-const p2pService = new P2PService(blockchain);
+const p2pService = new P2PService(P2P_PORT, PEERS, blockchain);
 const miner = new Miner(blockchain, p2pService, minerWallet);
 
 let walletContainer = [];
@@ -141,6 +146,7 @@ setIntervalAsync(async () => {
 */
 
 app.listen(HTTP_PORT, () => {
-  	console.log(`Service HTTP:${HTTP_PORT} listening...`);
+  	console.log(`Server: ${NAME}`);
+  	console.log(`Service HTTP: ${HTTP_PORT} listening...`);
   	p2pService.listen();
 })

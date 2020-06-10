@@ -6,8 +6,13 @@
   "private": false,
   "bin": "./dist/service/index.js",
   "pkg": {
-    "scripts": ["./public/assets/**/*.js"],
-    "assets": ["./public/assets/**/*", "./dist/service/views/**/*"]
+    "scripts": [
+      "./public/assets/**/*.js"
+    ],
+    "assets": [
+      "./public/assets/**/*",
+      "./dist/service/views/**/*"
+    ]
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -31,12 +36,14 @@
     "miner": "babel-node miner.js",
     "clean": "rm -rf dist && mkdir dist",
     "build": "yarn clean && babel src -s -d dist && cp -r src/service/views dist/service/views",
-    "start:prod": "yarn build && pm2 start ./dist/service/index.js --name blockchain --log activity.log"
+    "start:prod": "yarn build && pm2 start ./dist/service/index.js --name blockchain --log activity.log",
+    "pkg": "yarn build && pkg ./dist/service/index.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
     "crypto-js": "^4.0.0",
-    "ejs": "^3.1.2",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.3",
     "elliptic": "^6.5.2",
     "express": "^4.17.1",
     "pkg": "^4.4.8",

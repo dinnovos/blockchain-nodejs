@@ -1,7 +1,8 @@
 import  webSocket from 'ws';
 
-const { P2P_PORT = 5000, PEERS } = process.env;
-const peers = PEERS ? PEERS.split(",") : [];
+//const { P2P_PORT = 5000, PEERS } = process.env;
+//const peers = PEERS ? PEERS.split(",") : [];
+
 const MESSAGE = { 
 	BLOCKS: 'blocks',
 	TX: 'transaction',
@@ -9,15 +10,19 @@ const MESSAGE = {
 };
 
 class P2PService{
-	constructor(blockchain){
+	constructor(port, peers, blockchain){
+		this.port = port;
+		this.peers = peers;
 		this.blockchain = blockchain;
 		this.sockets = [];
 	}
 
 	listen(){
 
+		let peers = this.peers;
+
 		// Crea una instancia de webSocket en el puerto por defecto (5000)
-		const server = new webSocket.Server({port: P2P_PORT});
+		const server = new webSocket.Server({port:this.port});
 
 		// Cuando se reciba una conexion de un cliente
 		server.on('connection', (socket) => this.onConnection(socket));
@@ -30,7 +35,7 @@ class P2PService{
 			socket.on("open", () => this.onConnection(socket));
 		});
 
-		console.log(`Service WS: ${P2P_PORT} listening...`);
+		console.log(`Service WS: ${this.port} listening...`);
 	}
 
 	onConnection(socket){
