@@ -79,12 +79,15 @@ app.post("/mine", (req, res) => {
 });
 
 app.post("/wallet", (req, res) => {
-	const newWallet = new Wallet(blockchain, 0);
-	const { publicKey } = newWallet;
+
+	const { body: { type } } = req;
+
+	const newWallet = new Wallet(blockchain, 0, type);
+	const { publicKey, keyPair } = newWallet;
 
 	walletContainer.push(newWallet);
 
-	res.json({ publicKey });
+	res.json({ publicKey: publicKey, keyPair: keyPair });
 });
 
 app.get("/transactions", (req, res) => {

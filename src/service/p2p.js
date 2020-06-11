@@ -76,7 +76,7 @@ class P2PService{
 	}
 
 	broadcast(type, value){
-		console.log(`[ws:broadcast] ${type}...`);
+
 		const message = JSON.stringify({type, value});
 
 		this.sockets.forEach((socket) => socket.send(message));
