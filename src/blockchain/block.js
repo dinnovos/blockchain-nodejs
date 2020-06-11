@@ -14,7 +14,7 @@ class Block {
   }
 
   static get genesis() {
-    const timestamp = (new Date(2000, 0, 1)).getTime();
+    const timestamp = (new Date(2000, 0, 1, 0, 0, 0)).getTime();
     return new this(timestamp, undefined, 'g3n3s1s-h4sh', 'i like ramen.', 0, DIFFICULTY);
   }
 
