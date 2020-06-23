@@ -42,6 +42,14 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
+
 app.get("/", (req, res) => {
 	const { memoryPool: { transactions }, blocks } = blockchain;
 	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
@@ -80,14 +88,90 @@ app.post("/mine", (req, res) => {
 
 app.post("/wallet", (req, res) => {
 
-	const { body: { type } } = req;
-
-	const newWallet = new Wallet(blockchain, 0, type);
+	const newWallet = new Wallet(blockchain, 1000);
 	const { publicKey, keyPair } = newWallet;
 
 	walletContainer.push(newWallet);
-
 	res.json({ publicKey: publicKey, keyPair: keyPair });
+});
+
+app.get("/wallet/balance", (req, res) => {
+
+	const { query: { publicKey } } = req;
+
+	let data = {};
+
+	walletContainer.forEach((wallet) => {
+		if(wallet.publicKey === publicKey){
+			data = { balance: wallet.currentBalance };
+		}
+	});
+
+	if(Object.keys(data).length === 0){
+		res.json({"status":"failed", "message":"wallet not found"});
+
+		return;
+	}
+
+	res.json(data);
+});
+
+app.get("/wallet/unconfirmed/transactions", (req, res) => {
+	const { query: { publicKey } } = req;
+	const { memoryPool } = blockchain;
+
+	let tx = memoryPool.find(publicKey);
+
+	res.json({"status":"ok", "tx":tx});
+});
+
+app.get("/wallet/confirmed/transactions", (req, res) => {
+	const { query: { publicKey } } = req;
+	const { blocks } = blockchain;
+
+	let txs = [];
+
+	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
+
+	blocksTx.forEach((block) => {
+
+		block.data.forEach((tx) => {
+			if(tx.input.address === publicKey){
+				txs.push(tx);
+			}
+		});
+
+	});
+
+	res.json({"status":"ok", "txs":txs});
+});
+
+
+app.post("/miner-wallet", (req, res) => {
+
+	const { body: { key } } = req;
+
+	let data = {};
+
+	if(key === undefined || key === null || key === ""){
+		res.json({status:"failed", "message": "Not key found"});
+		return;
+	}
+	
+	walletContainer.forEach((wallet) => {
+		if(wallet.key === key){
+			data = { publicKey: wallet.publicKey, keyPair: wallet.keyPair, balance: wallet.balance };
+		}
+	});
+
+	if(Object.keys(data).length === 0){
+		const newWallet = new Wallet(blockchain, 0, TYPE.MINER, key);
+		const { publicKey, keyPair, balance } = newWallet;
+		walletContainer.push(newWallet);
+		data = { publicKey: publicKey, keyPair: keyPair, balance: balance };
+	}
+
+	res.json(data);
 });
 
 app.get("/transactions", (req, res) => {

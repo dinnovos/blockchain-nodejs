@@ -59,8 +59,7 @@ class P2PService{
 				else if(type === MESSAGE.WIPE)
 					blockchain.memoryPool.wipe();
 			}catch(error){
-				console.log(`[ws:message] error ${error}`);
-				throw Error(error);
+				console.log(`ATENCION: [ws:message] error ${error}`);
 			}
 		});
 

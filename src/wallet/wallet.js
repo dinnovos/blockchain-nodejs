@@ -11,7 +11,7 @@ const TYPE = {
 };
 
 class Wallet{
-	constructor(blockchain, initialBalance = INITIAL_BALANCE, type = TYPE.USER){
+	constructor(blockchain, initialBalance = INITIAL_BALANCE, type = TYPE.USER, key = null){
 
 		// Solo se debe usar como balance inicial, no como balance actualizado
 		this.balance = initialBalance;
@@ -25,6 +25,8 @@ class Wallet{
 		this.blockchain = blockchain;
 
 		this.type = type;
+
+		this.key = key;
 	}
 
 	toString(){
