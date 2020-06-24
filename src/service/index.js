@@ -8,6 +8,8 @@ import P2PService, { MESSAGE } from './p2p';
 import Wallet, { TYPE } from '../wallet';
 import Miner from '../miner';
 
+const HTTPS = require('https');
+
 const fs = require('fs');
 let envConfig = fs.readFileSync(process.cwd() + '/env.json');
 let config = JSON.parse(envConfig);
@@ -237,3 +239,13 @@ app.listen(HTTP_PORT, () => {
   	console.log(`Service HTTP: ${HTTP_PORT} listening...`);
   	p2pService.listen();
 })
+
+//SSL certificate
+let privateKey = fs.readFileSync(path.resolve('./private.key'), 'utf8');
+let certificate = fs.readFileSync(path.resolve('./certificate.crt'), 'utf8');
+let credentials = { key: privateKey, cert: certificate };
+
+var httpsServer = HTTPS.createServer(credentials, app);
+
+// Inicia server https
+httpsServer.listen(443);
