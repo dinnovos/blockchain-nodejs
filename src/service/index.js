@@ -16,7 +16,7 @@ let config = JSON.parse(envConfig);
 
 const { setIntervalAsync } = require('set-interval-async/dynamic');
 
-const { NAME, HTTP_PORT = 3000, HTTPS_PORT = 3443, P2P_PORT = 5000, PRIVKEY, CERT, CHAIN PEERS } = config;
+const { NAME, HTTP_PORT = 3000, HTTPS_PORT = 3443, P2P_PORT = 5000, PRIVKEY, CERT, CHAIN, PEERS } = config;
 
 const app = express();
 
