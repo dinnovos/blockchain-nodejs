@@ -16,7 +16,7 @@ let config = JSON.parse(envConfig);
 
 const { setIntervalAsync } = require('set-interval-async/dynamic');
 
-const { NAME, HTTP_PORT = 3000, P2P_PORT = 5000, PEERS } = config;
+const { NAME, HTTP_PORT = 3000, HTTPS_PORT = 3443, P2P_PORT = 5000, PRIVKEY, CERT, CHAIN PEERS } = config;
 
 const app = express();
 
@@ -222,18 +222,6 @@ app.get("/mine/transactions", (req, res) => {
 	res.json({ status: "ok" });
 });
 
-/*
-// Cada 20 segundos el minero busca transacciones en  momory pool y mina las transacciones
-setIntervalAsync(async () => {
-	try{
-		const block = miner.mine(blockchainWallet);
-		console.log("Mining...");
-	}catch(error){
-		console.log("Error: ", error.message);
-	}
-}, 60000);
-*/
-
 app.listen(HTTP_PORT, () => {
   	console.log(`Server: ${NAME}`);
   	console.log(`Service HTTP: ${HTTP_PORT} listening...`);
@@ -241,11 +229,19 @@ app.listen(HTTP_PORT, () => {
 })
 
 //SSL certificate
-let privateKey = fs.readFileSync(path.resolve('./private.key'), 'utf8');
-let certificate = fs.readFileSync(path.resolve('./certificate.crt'), 'utf8');
-let credentials = { key: privateKey, cert: certificate };
+const privateKey = fs.readFileSync(PRIVKEY, 'utf8');
+const certificate = fs.readFileSync(CERT, 'utf8');
+const ca = fs.readFileSync(CHAIN, 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
 var httpsServer = HTTPS.createServer(credentials, app);
 
 // Inicia server https
-httpsServer.listen(443);
+httpsServer.listen(HTTPS_PORT, () => {
+  	console.log(`Service HTTPS: ${HTTPS_PORT} listening...`);
+});
