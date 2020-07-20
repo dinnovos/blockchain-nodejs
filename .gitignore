@@ -8,4 +8,6 @@ yarn-error.log
 *.sublime-project
 *.sublime-workspace
 *.pem
+*.log
+*.lock
 /env.json
