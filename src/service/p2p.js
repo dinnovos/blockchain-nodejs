@@ -38,9 +38,6 @@ class P2PService{
 			socket.on("error", (event) => {
 				console.log("[ws:socket not connect to "+event.address+":"+event.port+"]");
 			});
-
-			// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
-			this.sockets.push(socket);
 		});
 
 		console.log(`Service WS: ${this.port} listening...`);
@@ -69,6 +66,9 @@ class P2PService{
 				console.log(`ATENCION: [ws:message] error ${error}`);
 			}
 		});
+
+		// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
+		this.sockets.push(socket);
 
 		// Cuando se establece una conexion se envia a ese nodo los bloques que tiene la instancia actual
 		socket.send(JSON.stringify({ type: MESSAGE.BLOCKS, value:blockchain.blocks }));
