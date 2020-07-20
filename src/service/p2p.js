@@ -90,6 +90,5 @@ class P2PService{
 	}
 }
 
-
 export  { MESSAGE };
 export default P2PService;
