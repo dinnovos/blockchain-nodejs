@@ -53,8 +53,6 @@ class P2PService{
 		socket.on("message", (message) => {
 			const { type, value } = JSON.parse(message);
 
-			console.log("Reciviendo...", JSON.parse(message));
-
 			try{
 				if(type === MESSAGE.BLOCKS)
 					blockchain.replace(value);
@@ -68,6 +66,7 @@ class P2PService{
 		});
 
 		// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
+		// Esta linea debe estar luego de que se establece una conexion.
 		this.sockets.push(socket);
 
 		// Cuando se establece una conexion se envia a ese nodo los bloques que tiene la instancia actual
@@ -86,9 +85,6 @@ class P2PService{
 		const message = JSON.stringify({type, value});
 
 		this.sockets.forEach((socket) => {
-
-			console.log("Broadcast para: ", message);
-
 			socket.send(message);
 		});
 	}
