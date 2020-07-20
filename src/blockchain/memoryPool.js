@@ -30,6 +30,10 @@ class MemoryPool{
 		return this.transactions.find(({ input }) => input.address === address);
 	}
 
+	getAll(){
+		return this.transactions;
+	}
+
 	wipe(){
 		this.transactions = [];
 	}

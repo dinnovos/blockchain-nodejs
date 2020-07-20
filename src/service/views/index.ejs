@@ -1,11 +1,11 @@
-<%- include('partials/header') -%>
+<%- include('partials/header', {serverName: serverName}) -%>
 
 <script>
 	$(function(){
 		$(".btn-new-wallet").on("click", function(){
 			$.ajax({
                 type: "POST",
-                url: '/wallet',
+                url: '/wallet/create',
                 dataType: 'json',
                 success: function (result){
 
@@ -31,7 +31,7 @@
 		$(".btn-miner").on("click", function(){
 			$.ajax({
                 type: "GET",
-                url: '/mine/transactions',
+                url: '/transactions/confirm',
                 dataType: 'json',
                 success: function (result){
 
@@ -52,7 +52,7 @@
 
 			$.ajax({
                 type: "POST",
-                url: '/transaction',
+                url: '/transaction/create',
                 data: form.serialize(),
                 dataType: 'json',
                 success: function (result){
@@ -90,7 +90,7 @@
 </script>
 
 <div class="container" style="padding-top: 30px;">
-
+<% serverName %>
 	<div class="row">
 		<div class="col-12">
 
@@ -139,7 +139,6 @@
 								<td class="text-middle text-center">
 									<div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
 									  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalTransfer-<%=index%>"><i class="fa fa-exchange"></i></button>
-									  <button type="button" class="btn btn-secondary"><i class="fa fa-list"></i></button>
 									</div>
 
 									<div class="modal fade" id="modalTransfer-<%=index%>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

@@ -29,10 +29,18 @@ class P2PService{
 
 		// Por cad peer intento establecer una conexion
 		peers.forEach((peer) => {
+
 			const socket = new webSocket(peer);
 
 			// Por cada peer llamo a onConneciton para guardar en la instancia ese socket
 			socket.on("open", () => this.onConnection(socket));
+
+			socket.on("error", (event) => {
+				console.log("[ws:socket not connect to "+event.address+":"+event.port+"]");
+			});
+
+			// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
+			this.sockets.push(socket);
 		});
 
 		console.log(`Service WS: ${this.port} listening...`);
@@ -43,13 +51,12 @@ class P2PService{
 
 		console.log('[ws:socket connect]');
 
-		// Se almacena el nuevo socket en un array para enviar mensajes a futuro (Broadcast).
-		this.sockets.push(socket);
-
 		// Cuando recibo el mensaje, obtengo una lista de bloque del nodo al que me he contacto
 		// Luego intento reemplazar esa lista de bloque por la lista de la instancia actual
 		socket.on("message", (message) => {
 			const { type, value } = JSON.parse(message);
+
+			console.log(JSON.parse(message));
 
 			try{
 				if(type === MESSAGE.BLOCKS)

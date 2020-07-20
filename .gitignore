@@ -7,4 +7,5 @@
 yarn-error.log
 *.sublime-project
 *.sublime-workspace
+*.pem
 /env.json

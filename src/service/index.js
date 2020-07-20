@@ -16,7 +16,7 @@ let config = JSON.parse(envConfig);
 
 const { setIntervalAsync } = require('set-interval-async/dynamic');
 
-const { NAME, HTTP_PORT = 3000, HTTPS_PORT = 3443, P2P_PORT = 5000, PRIVKEY, CERT, CHAIN, PEERS } = config;
+const { NAME, HTTP_PORT = 3000, HTTPS_PORT = 3440, P2P_PORT = 5000, PRIVKEY, CERT, CHAIN, PEERS } = config;
 
 const app = express();
 
@@ -67,28 +67,17 @@ app.get("/", (req, res) => {
 		});
 	});
 
-	res.render('index', {walletContainer: walletContainer, transactions: transactions, blocksOfBlockchain: blocksOfBlockchain, typeWallet: TYPE});
+	res.render('index', {walletContainer: walletContainer, transactions: transactions, blocksOfBlockchain: blocksOfBlockchain, typeWallet: TYPE, serverName: NAME});
 
 });
 
+// Get Blocks
 app.get("/blocks", (req, res) => {
 	res.json(blockchain.blocks);
 });
 
-app.post("/mine", (req, res) => {
-	const {body: { data }} = req;
-	const block = blockchain.addBlock(data);
-
-	// Cuando la instancia mine un nuevo bloque, enviara un broadcast a toda la red para intentar reemplazar la blockchain de cada nodo
-	p2pService.sync();
-
-	res.json({
-		blocks: blockchain.blocks.length,
-		block
-	});
-});
-
-app.post("/wallet", (req, res) => {
+// Wallet Create
+app.post("/wallet/create", (req, res) => {
 
 	const newWallet = new Wallet(blockchain, 1000);
 	const { publicKey, keyPair } = newWallet;
@@ -97,59 +86,8 @@ app.post("/wallet", (req, res) => {
 	res.json({ publicKey: publicKey, keyPair: keyPair });
 });
 
-app.get("/wallet/balance", (req, res) => {
-
-	const { query: { publicKey } } = req;
-
-	let data = {};
-
-	walletContainer.forEach((wallet) => {
-		if(wallet.publicKey === publicKey){
-			data = { balance: wallet.currentBalance };
-		}
-	});
-
-	if(Object.keys(data).length === 0){
-		res.json({"status":"failed", "message":"wallet not found"});
-
-		return;
-	}
-
-	res.json(data);
-});
-
-app.get("/wallet/unconfirmed/transactions", (req, res) => {
-	const { query: { publicKey } } = req;
-	const { memoryPool } = blockchain;
-
-	let tx = memoryPool.find(publicKey);
-
-	res.json({"status":"ok", "tx":tx});
-});
-
-app.get("/wallet/confirmed/transactions", (req, res) => {
-	const { query: { publicKey } } = req;
-	const { blocks } = blockchain;
-
-	let txs = [];
-
-	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
-
-	blocksTx.forEach((block) => {
-
-		block.data.forEach((tx) => {
-			if(tx.input.address === publicKey){
-				txs.push(tx);
-			}
-		});
-
-	});
-
-	res.json({"status":"ok", "txs":txs});
-});
-
-
-app.post("/miner-wallet", (req, res) => {
+// Create wallet for miner
+app.post("/wallet/create/miner", (req, res) => {
 
 	const { body: { key } } = req;
 
@@ -176,12 +114,30 @@ app.post("/miner-wallet", (req, res) => {
 	res.json(data);
 });
 
-app.get("/transactions", (req, res) => {
-	const { memoryPool: { transactions } } = blockchain;
-	res.json(transactions);
+// Get Balance
+app.get("/wallet/balance", (req, res) => {
+
+	const { query: { publicKey } } = req;
+
+	let data = {};
+
+	walletContainer.forEach((wallet) => {
+		if(wallet.publicKey === publicKey){
+			data = { balance: wallet.currentBalance };
+		}
+	});
+
+	if(Object.keys(data).length === 0){
+		res.json({"status":"failed", "message":"wallet not found"});
+
+		return;
+	}
+
+	res.json(data);
 });
 
-app.post("/transaction", (req, res) => {
+// Create transaction
+app.post("/transaction/create", (req, res) => {
 	const { body: { senderAddress, recipientAddress, amount } } = req;
 
 	if(senderAddress == recipientAddress){
@@ -206,13 +162,106 @@ app.post("/transaction", (req, res) => {
 		const tx = senderWallet.createTransaction(recipientAddress, parseInt(amount));
 		p2pService.broadcast(MESSAGE.TX, tx);
 		res.json(tx);
-		
 	}catch(error){
 		res.json({ error: error.message });
 	}
-})
+});
 
-app.get("/mine/transactions", (req, res) => {
+// Get unconfirmed transactions
+app.get("/transactions/unconfirmed", (req, res) => {
+	const { query: { publicKey } } = req;
+	const { memoryPool } = blockchain;
+
+	let txs = {};
+
+	if(publicKey === undefined){
+		txs = memoryPool.getAll();
+	}else{
+		txs = memoryPool.find(publicKey);
+	}
+
+	res.json({"status":"ok", "txs":txs});
+});
+
+// Get confirmed transactions
+app.get("/transactions/sent", (req, res) => {
+	const { query: { publicKey } } = req;
+	const { blocks } = blockchain;
+
+	let txs = [];
+	let sentTxs = [];
+
+	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
+
+	blocksTx.forEach((block) => {
+		block.data.forEach((tx) => {
+			if(tx.input.address === publicKey){
+				txs.push(tx);
+			}
+		});
+	});
+
+	if(txs.length > 0){
+		// Ordena las transacciones
+		txs = txs.sort((a, b) => a.input.timestamp - b.input.timestamp);
+
+		txs.forEach((tx) => {
+
+			tx.outputs.forEach((output) => {
+				if(output.address !== publicKey){
+					sentTxs.push({
+						'id': tx.id,
+						'amount': output.amount,
+						'destinyAddress': output.address,
+						'timestamp': output.timestamp
+					});
+				}
+			});
+		});
+	}
+
+	res.json({"status":"ok", "txs":sentTxs});
+});
+
+app.get("/transactions/received", (req, res) => {
+	const { query: { publicKey } } = req;
+	const { blocks } = blockchain;
+
+	let txs = [];
+	let receivedTxs = [];
+
+	const blocksTx = blocks.filter(( block ) => Array.isArray(block.data) );
+
+	blocksTx.forEach((block) => {
+		block.data.forEach((tx) => {
+			txs.push(tx);
+		});
+	});
+
+	if(txs.length > 0){
+		// Ordena las transacciones
+		txs = txs.sort((a, b) => a.input.timestamp - b.input.timestamp);
+
+		txs.forEach((tx) => {
+
+			tx.outputs.forEach((output) => {
+				if(output.address === publicKey && output.address !== tx.input.address){
+					receivedTxs.push({
+						'id': tx.id,
+						'amount': output.amount,
+						'originAddress': publicKey,
+						'timestamp': output.timestamp
+					});
+				}
+			});
+		});
+	}
+
+	res.json({"status":"ok", "txs":receivedTxs});
+});
+
+// Confirm transactions
+app.get("/transactions/confirm", (req, res) => {
 	try{
 		const block = miner.mine(blockchainWallet);
 	}catch(error){
@@ -231,12 +280,10 @@ app.listen(HTTP_PORT, () => {
 //SSL certificate
 const privateKey = fs.readFileSync(PRIVKEY, 'utf8');
 const certificate = fs.readFileSync(CERT, 'utf8');
-const ca = fs.readFileSync(CHAIN, 'utf8');
 
 const credentials = {
 	key: privateKey,
-	cert: certificate,
-	ca: ca
+	cert: certificate
 };
 
 var httpsServer = HTTPS.createServer(credentials, app);

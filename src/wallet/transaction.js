@@ -22,10 +22,10 @@ class Transaction{
 		// Se utiliza el operador spread ya que son 2 objectos que entra (Output del destinatoario, y Output de quien envia con el nuevo balance)
 		transaction.outputs.push(...[
 			// Output de quien recibe
-			{ amount, address: recipientAddress},
+			{ amount, address: recipientAddress, timestamp: Date.now()},
 
 			// Output de quien envia pero con el nuevo balance
-			{ amount: currentBalance - amount, address: publicKey}
+			{ amount: currentBalance - amount, address: publicKey, timestamp: Date.now()}
 		]);
 
 		transaction.input = Transaction.sign(transaction, senderWallet);
