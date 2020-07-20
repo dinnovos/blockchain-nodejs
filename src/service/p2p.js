@@ -56,8 +56,6 @@ class P2PService{
 		socket.on("message", (message) => {
 			const { type, value } = JSON.parse(message);
 
-			console.log(JSON.parse(message));
-
 			try{
 				if(type === MESSAGE.BLOCKS)
 					blockchain.replace(value);
@@ -84,6 +82,8 @@ class P2PService{
 	broadcast(type, value){
 
 		const message = JSON.stringify({type, value});
+
+		console.log("Broadcast", message);
 
 		this.sockets.forEach((socket) => socket.send(message));
 	}
