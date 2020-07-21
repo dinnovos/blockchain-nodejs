@@ -50,14 +50,15 @@ class Transaction{
 		return elliptic.verifySignature(address, signature, outputs);
 	}
 
-	static sign(transaction, senderWallet){
+	static sign(transaction, senderWallet, updateTimestamp = true){
 
 		// Contiene los detalles del emisor
 		// Timestamp: momento de creacion de la transaccion
 		// Address: direccion publica del emisor
 		// Signature: firma digital que hace unica la transaccion
+
 		return {
-			timestamp: 	Date.now(),
+			timestamp: 	(updateTimestamp)?Date.now():transaction.input.timestamp,
 			amount: 	senderWallet.currentBalance,
 			address: 	senderWallet.publicKey,
 			signature: 	senderWallet.sign(transaction.outputs),
@@ -81,7 +82,10 @@ class Transaction{
 			amount, address: recipientAddress
 		});
 
-		this.input = Transaction.sign(this, senderWallet);
+		// El tercer parametro es false, para evitar que se actualice el timestamp del input.
+		// Esto es necesario para poder validar transacciones anteriores y sumas del balance al momento de confirmar.
+		// Igualmente cada segmento de transaccion tiene su propio timestamp.
+		this.input = Transaction.sign(this, senderWallet, false);
 
 		return this;
 	}

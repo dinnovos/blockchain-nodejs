@@ -85,7 +85,7 @@ class Wallet{
 			}
 		});
 
-		// Filtra todas las transacciones cuyo input tenga la direccion de la wallet
+		// Filtra todas las transacciones cuyo input tenga la direccion de la wallet (Transacciones enviadas)
 		const walletInputTxs = txs.filter((tx) => tx.input.address === publicKey);
 
 		if(walletInputTxs.length > 0){
@@ -100,7 +100,7 @@ class Wallet{
 			timestamp = recentInputTx.input.timestamp;
 		}
 
-		// Vuelte a recorrer todas las transacciones y las filtra para obtener todas aquellas que fueron posterior
+		// Vuelte a recorrer todas las transacciones y las filtra para obtener todas aquellas que fueron posterior a la ultima tx enviada
 		// obtenenido en la ultima transaccion
 		// Luego busca en todos los outputs y suma todos los montos (balances) donde la wallet es la receptora
 		txs.filter(({ input }) => input.timestamp > timestamp).forEach(( { outputs } ) => {
