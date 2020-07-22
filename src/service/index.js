@@ -291,8 +291,6 @@ if(CHAIN === undefined){
 }else{
 	const ca = fs.readFileSync(CHAIN, 'utf8');
 
-	console.log(ca);
-
 	credentials = {
 		key: privateKey,
 		cert: certificate,
