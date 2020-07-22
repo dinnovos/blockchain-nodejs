@@ -275,16 +275,26 @@ app.listen(HTTP_PORT, () => {
   	console.log(`Server: ${NAME}`);
   	console.log(`Service HTTP: ${HTTP_PORT} listening...`);
   	p2pService.listen();
-})
+});
 
 //SSL certificate
 const privateKey = fs.readFileSync(PRIVKEY, 'utf8');
 const certificate = fs.readFileSync(CERT, 'utf8');
 
-const credentials = {
-	key: privateKey,
-	cert: certificate
-};
+if(CHAIN === undefined){
+	const credentials = {
+		key: privateKey,
+		cert: certificate
+	};
+}else{
+	const ca = fs.readFileSync(CHAIN, 'utf8');
+
+	const credentials = {
+		key: privateKey,
+		cert: certificate,
+		ca:ca
+	};
+}
 
 var httpsServer = HTTPS.createServer(credentials, app);
 
