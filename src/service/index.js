@@ -281,15 +281,19 @@ app.listen(HTTP_PORT, () => {
 const privateKey = fs.readFileSync(PRIVKEY, 'utf8');
 const certificate = fs.readFileSync(CERT, 'utf8');
 
+let credentials = {};
+
 if(CHAIN === undefined){
-	const credentials = {
+	credentials = {
 		key: privateKey,
 		cert: certificate
 	};
 }else{
 	const ca = fs.readFileSync(CHAIN, 'utf8');
 
-	const credentials = {
+	console.log(ca);
+
+	credentials = {
 		key: privateKey,
 		cert: certificate,
 		ca:ca
